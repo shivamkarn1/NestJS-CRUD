@@ -1,4 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { NotFoundException } from '@nestjs/common';
 
 export type Role = 'INTERN' | 'ENGINEER' | 'GOV';
 
@@ -26,28 +29,33 @@ export class UsersService {
 
   findAll(role?: Role) {
     if (role) {
-      return this.users.filter((user) => user.role === role);
+      const roleArray = this.users.filter((user) => user.role === role);
+      if (roleArray.length === 0) {
+        throw new NotFoundException('User role not found, Does not exist');
+        return roleArray;
+      }
     }
     return this.users;
   }
 
   findOne(id: number) {
+    const user = this.users.find((user) => user.id === id);
+    if (!user) {
+      throw new NotFoundException('User not found , doesnt exist');
+    }
     return this.users.find((user) => user.id === id);
   }
 
-  create(user: { name: string; email: string; role?: Role }) {
+  create(createUserDto: CreateUserDto) {
     const newId = this.users.length
       ? Math.max(...this.users.map((u) => u.id)) + 1
       : 1;
-    const newUser: User = { id: newId, ...user };
+    const newUser: User = { id: newId, ...createUserDto } as unknown as User;
     this.users.push(newUser);
     return newUser;
   }
 
-  update(
-    id: number,
-    updatedUser: { name?: string; email?: string; role?: Role },
-  ) {
+  update(id: number, updatedUser: UpdateUserDto) {
     const cleanedUpdate = Object.fromEntries(
       Object.entries(updatedUser).filter(([, v]) => v !== undefined),
     ) as Partial<User>;
