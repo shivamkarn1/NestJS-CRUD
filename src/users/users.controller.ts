@@ -10,6 +10,9 @@ import {
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ValidationPipe } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
@@ -22,14 +25,10 @@ export class UsersController {
 
   @Post()
   createUser(
-    @Body()
-    userData: {
-      name: string;
-      email: string;
-      role?: 'INTERN' | 'ENGINEER' | 'GOV';
-    },
+    @Body(ValidationPipe)
+    createUserDto: CreateUserDto,
   ) {
-    return this.usersService.create(userData);
+    return this.usersService.create(createUserDto);
   }
 
   // Dynamic routes with :id LAST
@@ -42,14 +41,10 @@ export class UsersController {
   @Patch(':id')
   updateOne(
     @Param('id') id: string,
-    @Body()
-    updateData: {
-      name?: string;
-      email?: string;
-      role?: 'INTERN' | 'ENGINEER' | 'GOV';
-    },
+    @Body(ValidationPipe)
+    updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(+id, updateData);
+    return this.usersService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
