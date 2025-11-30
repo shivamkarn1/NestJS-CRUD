@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -33,8 +34,8 @@ export class UsersController {
 
   // Dynamic routes with :id LAST
   @Get(':id')
-  getOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  getOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.findOne(id);
     // return this.usersService.findOne(Number(id));
   }
 
@@ -52,7 +53,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  deleteOne(@Param('id') id: string) {
-    return this.usersService.delete(+id);
+  deleteOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.delete(id);
   }
 }
